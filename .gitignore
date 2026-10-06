@@ -1,0 +1,3 @@
+reports/*.html
+__pycache__/
+smoke_test.py

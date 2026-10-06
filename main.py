@@ -63,16 +63,21 @@ def run(target_url, choice, scan_all_pages):
         page = client.get(target_url)
         all_pages = [page]
     
+    if not selected_attack_function:
+        print(RED + "Invalid choice of attack" + RESET)
+        return
+
+    checks = selected_attack_function()
     try:
         for page in all_pages:
-            if selected_attack_function:
-                for page in all_pages:
-                    print(RED + 'Checking page: [{}] {}'.format(page.status_code, page.url) + RESET)
-                    log.add_url(page.url, color='green')
-                    for atk in selected_attack_function():
-                        atk(page, client, log)     
-            else:
-                print(RED + "Invalid choice of attack" + RESET)
+            print(RED + 'Checking page: [{}] {}'.format(page.status_code, page.url) + RESET)
+            log.add_url(page.url, color='green')
+            for atk in checks:
+                try:
+                    atk(page, client, log)
+                except Exception as exc:
+                    print(YELLOW + '  ! {} failed on {}: {}'.format(
+                        getattr(atk, "__name__", "check"), page.url, exc) + RESET)
     except KeyboardInterrupt:
         print('Interrupted')
     finally:
@@ -122,7 +127,14 @@ def main():
                 if not target_url:
                     print(RED + "No URL entered." + RESET)
                     continue
-                
+
+                consent = input(
+                    RED + "Do you have explicit, written authorization to test "
+                    + target_url + "? (yes/no): " + RESET).strip().lower()
+                if consent not in ('yes', 'y'):
+                    print(RED + "Authorization not confirmed. Aborting this scan." + RESET)
+                    continue
+
                 scan_all_pages = input(YELLOW + "Scan all pages? (y/n): "+RESET).lower() == 'y'
                 # print(scan_all_pages)
                 print(BLINK+ RED + "Choose an attack:" + RESET)
