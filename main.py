@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
 import sys, os
+import requests
 from cyber_sentinel.crawler import Crawler
 from cyber_sentinel.attacks import *
 from cyber_sentinel.utils import get_url_host, validate_url, dict_iterate, read_config, check_boolean_option
@@ -60,9 +61,28 @@ def run(target_url, choice, scan_all_pages):
     if scan_all_pages:
         all_pages = Crawler(target_url, client, additional_pages=additional_pages)
     else:
-        page = client.get(target_url)
+        try:
+            page = client.get(target_url)
+        except requests.exceptions.ConnectTimeout:
+            print(RED + "Could not connect to {}: connection timed out. "
+                  "The host may be down, or your network/firewall is blocking "
+                  "it.".format(target_url) + RESET)
+            return
+        except requests.exceptions.ConnectionError:
+            print(RED + "Could not connect to {}: connection failed. Check the "
+                  "URL and your internet connection.".format(target_url) + RESET)
+            return
+        except RedirectedToExternal as exc:
+            print(RED + "Aborted: {}".format(exc) + RESET)
+            return
+        except NotAPage as exc:
+            print(RED + "Target is not an HTML page: {}".format(exc) + RESET)
+            return
+        except requests.exceptions.RequestException as exc:
+            print(RED + "Request to {} failed: {}".format(target_url, exc) + RESET)
+            return
         all_pages = [page]
-    
+
     if not selected_attack_function:
         print(RED + "Invalid choice of attack" + RESET)
         return

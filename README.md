@@ -1,41 +1,83 @@
-🛡️ **CyberSentinel: Web Security Audit Tool in Python** 🛡️
+# 🛡️ CyberSentinel: Web Security Audit Tool in Python 🛡️
 
-CyberSentinel is an advanced Python-based cybersecurity assessment tool designed to bolster web service security. With a focus on proactive protection, it conducts thorough scans for a range of vulnerabilities, each offering insights and recommended prevention measures. From cross-site scripting (XSS) to directory listing, CyberSentinel generates detailed reports, equipping you with actionable steps to enhance web security.
+CyberSentinel is a Python-based web vulnerability-assessment tool. It scans a
+target web application for a range of common security issues and generates a
+detailed HTML report with findings and recommended fixes, covering everything
+from cross-site scripting (XSS) to insecure cookies and missing security
+headers.
 
-🌐 **Key Features**:
-- Automatic scanning of websites to find vulnerabilities
-- Generate detailed reports outlining vulnerabilities and recommendations.
-- Conducts in-depth scans for various vulnerabilities, employing Python and security tools.
-- Detects potential cross-site scripting (XSS) vulnerabilities and suggests preventive actions.
-- Advises on guarding against HTTP Parameter Pollution (HPP) attacks.
-- Identifies possible SQL errors, accompanied by recommended security measures.
-- Provides insights to prevent Cross-Site Request Forgery (CSRF) attempts.
-- Suggests measures to protect against carriage return line feed (CRLF) injections.
-- Alerts against Local File Inclusion (LFI) vulnerabilities and proposes safeguards.
-- Recommends preventive steps to avoid directory listing vulnerabilities.
-- Detects potential breaches and unauthorized access, offering mitigation strategies.
-- Advises on thwarting clickjacking attempts.
-- Offers insights to fortify cookies against vulnerabilities
-- Giving detailed reports that show what’s wrong and how to fix it.
+> ⚠️ **Authorized use only.** Only scan systems you own or have explicit,
+> written permission to test. The tool asks you to confirm authorization
+> before every scan.
 
-🚀 **Benefits**: CyberSentinel nurtures ethical hacking skills by addressing a spectrum of vulnerabilities and suggesting tailored preventive measures. Learn from practical experience, enhancing web application security while gaining insights into potential threats.
+## 🌐 Key Features
 
-🛠️ **Usage: **
-1. Clone the repository and navigate to the project folder. 
-	```git clone https://github.com/neerajjez/CyberSentinel.git```
-2. Change the directory to main folder
-	```cd cybersentinel```
-3. Install the Dependencies from requirements via pip package manager
-	```pip install -r requirements.txt``` or ``` pip install requests bs4 lxml tldextract js2py jinja2```
-4. Run ```python3 main.py``` or ```python main.py``` to start the assessment tool. 
-5. Provide target URLs and choose attack type
-6. Receive detailed reports and recommendations for web service improvement.
+- Crawl a single page or an entire site (same-host, depth-limited)
+- Passive technology fingerprinting from headers and HTML
+- Detection checks for:
+  - Reflected cross-site scripting (XSS)
+  - SQL injection (error-based indicators)
+  - HTTP Parameter Pollution (HPP)
+  - Cross-Site Request Forgery (missing anti-CSRF tokens)
+  - CRLF / HTTP response splitting
+  - Local File Inclusion / path traversal
+  - Directory listing
+  - Missing security headers (HSTS, CSP, X-Content-Type-Options)
+  - Clickjacking (missing framing protection)
+  - Insecure cookies (Secure / HttpOnly / SameSite)
+- Clean, severity-ranked HTML report saved to the `reports/` folder
 
-🔗 **Dependencies:**
+## 🗂️ Project Structure
+
 ```
-requests, bs4, lxml, tldextract, js2py, jinja2
+CyberSentinel/
+├── main.py                 # Interactive CLI entry point
+├── requirements.txt
+├── smoke_test.py           # Offline self-test against a local server
+└── cyber_sentinel/
+    ├── client.py           # HTTP client + Page model
+    ├── crawler.py          # Same-host crawler
+    ├── app_detect.py       # Technology fingerprinting
+    ├── attacks.py          # Detection checks
+    ├── logger.py           # Findings + HTML report
+    └── utils.py            # URL / config helpers
 ```
 
+## 🛠️ Usage
 
+1. Clone the repository and enter the folder:
+   ```
+   git clone https://github.com/AbdulMoeezMukadam/CyberSentinel.git
+   cd CyberSentinel
+   ```
+2. Install the dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+   (On Windows, use `python -m pip install -r requirements.txt` or
+   `py -m pip install -r requirements.txt`.)
+3. Run the tool:
+   ```
+   python3 main.py
+   ```
+   (or `py main.py` on Windows)
+4. Choose **1** to run, enter the target URL, confirm authorization, choose
+   whether to crawl all pages, and pick an attack type (**1** runs all checks).
+5. Open the generated report in the `reports/` folder.
+
+### Quick self-test (no internet required)
+
+```
+python3 smoke_test.py
+```
+
+This starts a local, deliberately-weak server, scans it, and writes a sample
+report. It should report 6 findings.
+
+## 🔗 Dependencies
+
+`requests`, `beautifulsoup4`, `lxml`, `tldextract`, `jinja2`
+
+---
 
 #cybersecurity #ethicalhacking #python #websecurity
